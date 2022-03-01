@@ -22,6 +22,13 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
         });
+
+        Schema::create('users_permissions', function (Blueprint $table) {
+            $table->id();
+            $table->string('permission_name');
+            $table->integer('user_id')->index();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+        });
     }
 
     /**
