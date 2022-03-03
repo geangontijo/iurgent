@@ -2,8 +2,10 @@
 
 namespace App\Exceptions;
 
+use App\Services\ApiResponse;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -42,11 +44,11 @@ class Handler extends ExceptionHandler
 
     public function render($request, \Throwable $exception)
     {
-        if (stripos('/api', $request->getPathInfo()) !== false) {
+        if (stripos($request->getPathInfo(), '/api') !== false) {
             if ($exception instanceof \Illuminate\Validation\ValidationException) {
-                return new JsonResponse([
-                    'errors' => $exception->validator->getMessageBag()->getMessages()
-                ]);
+                ApiResponse::$statusCode = Response::HTTP_UNPROCESSABLE_ENTITY;
+                ApiResponse::addError(...$exception->validator->getMessageBag()->getMessages());
+                return ApiResponse::response();
             }
         }
 
