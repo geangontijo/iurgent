@@ -14,6 +14,8 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    const PERMISSION_CLIENT = 'Cliente';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -43,6 +45,11 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function permissions()
+    {
+        return $this->hasMany(UserPermissions::class);
+    }
 
     public static function generateJwt(int $userId): string
     {

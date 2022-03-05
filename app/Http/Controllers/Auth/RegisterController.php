@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Entities\User;
+use App\Entities\UserPermissions;
 use App\Services\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,10 +27,14 @@ class RegisterController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        $userData = $request->only('name', 'email', 'password');
+        $user = new User();
 
-        $userData['password'] = Hash::make($userData['password']);
-        $user = User::create($userData);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $password = Hash::make($request->password);
+        $user->password = $password;
+        $user->save();
+
         ApiResponse::$statusCode = Response::HTTP_CREATED;
         ApiResponse::$responseData['Authorization'] = User::generateJwt($user->id);
         return ApiResponse::response();
