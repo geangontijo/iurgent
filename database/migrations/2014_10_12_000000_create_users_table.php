@@ -5,12 +5,9 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class() extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
@@ -28,7 +25,7 @@ return new class extends Migration
             $table->string('address_district', 2)->nullable();
             $table->string('address_city', 2)->nullable();
             $table->string('address_postal_code', 8)->nullable();
-            $table->decimal('adress_longitude', 10, 7)->nullable();
+            $table->decimal('address_longitude', 10, 7)->nullable();
             $table->decimal('address_latitude', 10, 7)->nullable();
 
             $table->timestamp('created_at')->useCurrent();
@@ -37,8 +34,6 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {

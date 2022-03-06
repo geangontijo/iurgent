@@ -42,6 +42,27 @@ class User extends Authenticatable
         return $this->hasMany(UserPermissions::class);
     }
 
+    public function hasAddress(): bool|array
+    {
+        $addressFields = [
+            'address_street_name' => ['required', 'max:255'],
+            'address_neighborhood' => ['required', 'max:255'],
+            'address_number' => ['required', 'max:255'],
+            'address_district' => ['required', 'max:2'],
+            'address_city' => ['required'],
+            'address_postal_code' => ['required', 'numeric', 'max:99999999'],
+            'address_longitude' => ['required', 'numeric', 'between:-90,90'],
+            'address_latitude' => ['required', 'numeric', 'between:-90,90'],
+        ];
+        foreach ($addressFields as $fieldName => $rules) {
+            if (null === $this->{$fieldName}) {
+                $failedFields[$fieldName] = $rules;
+            }
+        }
+
+        return 0 === count($failedFields) ? true : $failedFields;
+    }
+
     public static function generateJwt(int $userId): string
     {
         $userSelected = DB::selectOne(
@@ -49,6 +70,14 @@ class User extends Authenticatable
                 users.id,
                 users.name,
                 users.email,
+                users.address_street_name,
+                users.address_neighborhood,
+                users.address_number,
+                users.address_district,
+                users.address_city,
+                users.address_postal_code,
+                users.address_longitude,
+                users.address_latitude,
                 users.created_at
             FROM users WHERE users.id = ?',
             [$userId]
