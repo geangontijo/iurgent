@@ -3,7 +3,6 @@
 namespace App\Entities;
 
 use Firebase\JWT\JWT;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,11 +11,13 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+
+    public const PERMISSION_CLIENT = 'Cliente';
 
     public $timestamps = false;
-
-    const PERMISSION_CLIENT = 'Cliente';
 
     /**
      * The attributes that are mass assignable.
@@ -24,7 +25,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $guarded = [
-        'id'
+        'id',
     ];
 
     /**
@@ -33,7 +34,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password'
+        'password',
     ];
 
     public function permissions()
@@ -44,12 +45,12 @@ class User extends Authenticatable
     public static function generateJwt(int $userId): string
     {
         $userSelected = DB::selectOne(
-            "SELECT 
+            'SELECT 
                 users.id,
                 users.name,
                 users.email,
                 users.created_at
-            FROM users WHERE users.id = ?",
+            FROM users WHERE users.id = ?',
             [$userId]
         );
 
@@ -59,10 +60,10 @@ class User extends Authenticatable
     public static function findUserToLogin(string $email)
     {
         return DB::selectOne(
-            "SELECT 
+            'SELECT 
                 users.password,
                 users.id
-            FROM users WHERE users.email = :email",
+            FROM users WHERE users.email = :email',
             ['email' => $email]
         );
     }

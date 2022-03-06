@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
 use App\Entities\User;
-use App\Entities\UserPermissions;
+use App\Http\Controllers\Controller;
 use App\Services\ApiResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class RegisterController extends Controller
@@ -37,6 +34,7 @@ class RegisterController extends Controller
 
         ApiResponse::$statusCode = Response::HTTP_CREATED;
         ApiResponse::$responseData['Authorization'] = User::generateJwt($user->id);
+
         return ApiResponse::response();
     }
 }
