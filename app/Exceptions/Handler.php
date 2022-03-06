@@ -4,7 +4,6 @@ namespace App\Exceptions;
 
 use App\Services\ApiResponse;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -16,7 +15,6 @@ class Handler extends ExceptionHandler
      * @var array<int, class-string<Throwable>>
      */
     protected $dontReport = [
-        //
     ];
 
     /**
@@ -32,22 +30,26 @@ class Handler extends ExceptionHandler
 
     /**
      * Register the exception handling callbacks for the application.
-     *
-     * @return void
      */
     public function register()
     {
         $this->reportable(function (Throwable $e) {
-            //
         });
     }
 
-    public function render($request, \Throwable $exception)
+    public function render($request, Throwable $exception)
     {
-        if (stripos($request->getPathInfo(), '/api') !== false) {
+        if (false !== stripos($request->getPathInfo(), '/api')) {
             if ($exception instanceof \Illuminate\Validation\ValidationException) {
                 ApiResponse::$statusCode = Response::HTTP_UNPROCESSABLE_ENTITY;
                 ApiResponse::addError(...$exception->validator->getMessageBag()->getMessages());
+
+                return ApiResponse::response();
+            }
+            if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+                ApiResponse::$statusCode = Response::HTTP_UNAUTHORIZED;
+                ApiResponse::addError('Não autorizado.');
+
                 return ApiResponse::response();
             }
         }
