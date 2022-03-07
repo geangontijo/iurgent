@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Entities\User;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Auth\GuardHelpers;
@@ -32,9 +31,7 @@ class JwtGuard implements Guard
 
             $authorization = \str_replace('Bearer ', '', $authorization);
 
-            $jwtData = (array) JWT::decode($authorization, new Key(env('JWT_KEY'), 'HS256'));
-
-            return new User($jwtData);
+            return JWT::decode($authorization, new Key(env('JWT_KEY'), 'HS256'));
         } catch (\Throwable) {
         }
     }
